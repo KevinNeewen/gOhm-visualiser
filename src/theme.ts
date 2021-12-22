@@ -7,21 +7,40 @@ const colors = {
     YELLOW: '#F8CC82',
     WHITE: '#FCFCFC',
 };
-// declare module '@material-ui/core/styles/createPalette' {
-//     interface Palette {
-//         colors: any;
-//     }
-//     interface PaletteOptions {
-//         colors: any;
-//     }
-// }
+
+declare module '@material-ui/core/styles/createPalette' {
+    interface Palette {
+        colors: any;
+        gradient: {
+            background: string;
+        };
+    }
+    interface PaletteOptions {
+        colors: any;
+        gradient: {
+            background: string;
+        };
+    }
+}
 
 export const theme = createTheme({
     palette: createPalette({
         primary: {
             main: colors.DARK_GRAY,
+            light: colors.WHITE,
         },
-        // colors: {},
+        background: {
+            default: 'rgba(8, 15, 53, 1)',
+            paper: colors.DARK_GRAY,
+        },
+        gradient: {
+            background:
+                'linear-gradient(180deg, rgba(8, 15, 53, 0), rgba(0, 0, 10, 0.9)), linear-gradient(333deg, rgba(153, 207, 255, 0.2), rgba(180, 255, 217, 0.08)), radial-gradient(circle at 77% 89%, rgba(125, 163, 169, 0.8), rgba(125, 163, 169, 0) 50%),radial-gradient(circle at 15% 95%, rgba(125, 163, 169, 0.8), rgba(125, 163, 169, 0) 43%), radial-gradient(circle at 65% 23%, rgba(137, 151, 119, 0.4), rgba(137, 151, 119, 0) 70%), radial-gradient(circle at 10% 0%, rgba(187, 211, 204, 0.33), rgba(187,211,204,0) 35%), radial-gradient(circle at 11% 100%, rgba(131, 165, 203, 0.3), rgba(131, 165, 203, 0) 30%)',
+        },
+        colors: {
+            lightGray: colors.LIGHT_GRAY,
+            yellow: colors.YELLOW,
+        },
     }),
     typography: {
         fontFamily: ['-apple-system', 'BlinkMacSystemFont', 'Inter', 'sans-serif'].join(','),
@@ -33,5 +52,18 @@ export const theme = createTheme({
             fontWeight: 600,
         },
     },
-    overrides: {},
+    overrides: {
+        // MuiButton: {
+        //     root: {
+        //         backgroundColor: colors.YELLOW,
+        //         fontSize: '1.2857rem',
+        //         fontWeight: 500,
+        //         borderRadius: '.5rem',
+        //         textTransform: 'capitalize',
+        //     },
+        //     text: {
+        //         padding: '.5rem 5rem',
+        //     },
+        // },
+    },
 });
