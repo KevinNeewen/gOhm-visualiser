@@ -7,11 +7,10 @@ import { SOlympus } from '../../typechain/SOlympus';
 import { GOHM } from '../../typechain/GOHM';
 import { OlympusStaking } from '../../typechain/OlympusStaking';
 import AppBar from '../../components/AppBar';
-import { Container, Grid, Paper } from '@material-ui/core';
+import { Container, Grid, Paper, Button, TextField, Typography } from '@material-ui/core';
 import useStyles from './styles';
 import Header from '../../components/Header';
-import Button from '../../components/Button';
-import TextField from '../../components/TextField';
+import Metric from '../../components/Metric';
 
 interface MyProps {}
 
@@ -38,13 +37,13 @@ const App = (props: MyProps) => {
                 provider,
             ) as OlympusStaking;
 
-            const supply = (await sOhmContract.circulatingSupply()).toNumber()
-            const distribute = (await stakingContract.epoch()).distribute.toNumber()
-            const nextRebaseYield = distribute / supply
+            const supply = (await sOhmContract.circulatingSupply()).toNumber();
+            const distribute = (await stakingContract.epoch()).distribute.toNumber();
+            const nextRebaseYield = distribute / supply;
 
-            setRebaseYield(nextRebaseYield)
-            setFiveDayAPR(Math.pow(1 + nextRebaseYield, 5 * 3) - 1)
-            setYearlyAPY(Math.pow(1 + nextRebaseYield, 365 * 3) - 1)
+            setRebaseYield(nextRebaseYield);
+            setFiveDayAPR(Math.pow(1 + nextRebaseYield, 5 * 3) - 1);
+            setYearlyAPY(Math.pow(1 + nextRebaseYield, 365 * 3) - 1);
         }
 
         getOhmRebaseInfo();
@@ -63,15 +62,15 @@ const App = (props: MyProps) => {
             provider,
         ) as GOHM;
 
-        const sOhmBalanceRaw:BigNumber = await sOhmContract.balanceOf(address)
-        const sOhmBalance = sOhmBalanceRaw.toNumber()/(10**9) // sOhm has 9 decimals
-        setSOhmBalance(sOhmBalance)
-        const gOhmBalanceRaw:BigNumber = await gOhmContract.balanceOf(address)
-        const gOhmBalance = gOhmBalanceRaw.toNumber()/(10**18) // gOhm has 18 decimals
-        setGOhmBalance(gOhmBalance)
-        const sOhmFromGOhmRaw = await sOhmContract.fromG(gOhmBalanceRaw)
-        const sOhmFromGOhm = sOhmFromGOhmRaw.toNumber()/(10**9)
-        setTotalSOhmBalance(sOhmFromGOhm + sOhmBalance)
+        const sOhmBalanceRaw: BigNumber = await sOhmContract.balanceOf(address);
+        const sOhmBalance = sOhmBalanceRaw.toNumber() / 10 ** 9; // sOhm has 9 decimals
+        setSOhmBalance(sOhmBalance);
+        const gOhmBalanceRaw: BigNumber = await gOhmContract.balanceOf(address);
+        const gOhmBalance = gOhmBalanceRaw.toNumber() / 10 ** 18; // gOhm has 18 decimals
+        setGOhmBalance(gOhmBalance);
+        const sOhmFromGOhmRaw = await sOhmContract.fromG(gOhmBalanceRaw);
+        const sOhmFromGOhm = sOhmFromGOhmRaw.toNumber() / 10 ** 9;
+        setTotalSOhmBalance(sOhmFromGOhm + sOhmBalance);
     }
 
     return (
@@ -92,9 +91,24 @@ const App = (props: MyProps) => {
                                 gOHM Visuals
                             </Header>
                         </Grid>
+
+                        <Grid container xs={12} style={{ marginBottom: '5rem' }}>
+                            <Grid item xs={4}>
+                                <Metric title="APY" metric={yearlyAPY.toString()} />
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Metric title="sOHM Price" metric={'425.74'} />
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Metric title="gOHM Price" metric={'1000'} />
+                            </Grid>
+                        </Grid>
                         <Grid item xs={12}>
+                            <Typography classes={{ root: classes.walletAddressLabel }} variant="h6">
+                                Wallet Address
+                            </Typography>
                             <form className={classes.form} autoComplete="off">
-                                <TextField id="address" />
+                                <TextField id="address" variant="outlined" />
                                 <Button>Search</Button>
                             </form>
                         </Grid>

@@ -39,6 +39,10 @@ const styles = makeStyles((theme: Theme) =>
                 flexGrow: 1,
             },
         },
+        walletAddressLabel: {
+            color: theme.palette.primary.light,
+            marginBottom: '.5rem',
+        },
     }),
 );
 
