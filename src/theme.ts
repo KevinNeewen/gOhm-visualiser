@@ -43,13 +43,16 @@ export const theme = createTheme({
         },
     }),
     typography: {
-        fontFamily: ['-apple-system', 'BlinkMacSystemFont', 'Inter', 'sans-serif'].join(','),
+        fontFamily: ['square', 'sans-serif'].join(','),
         fontSize: 12,
         h1: {
             fontWeight: 700,
         },
-        h2: {
+        h4: {
             fontWeight: 600,
+        },
+        body1: {
+            fontWeight: 400,
         },
     },
     overrides: {
@@ -60,9 +63,14 @@ export const theme = createTheme({
                 fontWeight: 500,
                 borderRadius: '.5rem',
                 textTransform: 'capitalize',
+                border: 0,
+                padding: '6px 16px',
+                '&:hover': {
+                    backgroundColor: '#EDD8B4',
+                },
             },
             text: {
-                padding: '.5rem 5rem',
+                // padding: '.5rem 5rem',
             },
         },
         MuiOutlinedInput: {
@@ -87,6 +95,14 @@ export const theme = createTheme({
                 color: colors.WHITE,
                 fontSize: '1rem',
                 padding: '0 .4rem',
+            },
+        },
+        MuiDivider: {
+            root: {
+                height: '1px',
+                backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                width: '100%',
+                margin: '2rem 0',
             },
         },
     },

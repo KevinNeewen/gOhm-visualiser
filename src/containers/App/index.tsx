@@ -7,10 +7,13 @@ import { SOlympus } from '../../typechain/SOlympus';
 import { GOHM } from '../../typechain/GOHM';
 import { OlympusStaking } from '../../typechain/OlympusStaking';
 import AppBar from '../../components/AppBar';
-import { Container, Grid, Paper, Button, TextField, Typography } from '@material-ui/core';
+import { Container, Grid, Paper, Button, TextField, Typography, Divider } from '@material-ui/core';
 import useStyles from './styles';
 import Header from '../../components/Header';
 import Metric from '../../components/Metric';
+import DataRow from '../../components/DataRow';
+import { Adornment } from '../../model';
+import _debounce from 'lodash/debounce';
 
 interface MyProps {}
 
@@ -22,6 +25,8 @@ const App = (props: MyProps) => {
     const [sOhmBalance, setSOhmBalance] = useState(0);
     const [gOhmBalance, setGOhmBalance] = useState(0);
     const [totalSOhmBalance, setTotalSOhmBalance] = useState(0);
+    const [address, setAddress] = useState<string>(null);
+    const [hasError, setHasError] = useState(false);
 
     useEffect(() => {
         async function getOhmRebaseInfo() {
@@ -61,17 +66,29 @@ const App = (props: MyProps) => {
             gOhm.abi,
             provider,
         ) as GOHM;
-
-        const sOhmBalanceRaw: BigNumber = await sOhmContract.balanceOf(address);
-        const sOhmBalance = sOhmBalanceRaw.toNumber() / 10 ** 9; // sOhm has 9 decimals
-        setSOhmBalance(sOhmBalance);
-        const gOhmBalanceRaw: BigNumber = await gOhmContract.balanceOf(address);
-        const gOhmBalance = gOhmBalanceRaw.toNumber() / 10 ** 18; // gOhm has 18 decimals
-        setGOhmBalance(gOhmBalance);
-        const sOhmFromGOhmRaw = await sOhmContract.fromG(gOhmBalanceRaw);
-        const sOhmFromGOhm = sOhmFromGOhmRaw.toNumber() / 10 ** 9;
-        setTotalSOhmBalance(sOhmFromGOhm + sOhmBalance);
+        try {
+            const sOhmBalanceRaw: BigNumber = await sOhmContract.balanceOf(address);
+            const sOhmBalance = sOhmBalanceRaw.toNumber() / 10 ** 9; // sOhm has 9 decimals
+            setSOhmBalance(sOhmBalance);
+            const gOhmBalanceRaw: BigNumber = await gOhmContract.balanceOf(address);
+            const gOhmBalance = gOhmBalanceRaw.toNumber() / 10 ** 18; // gOhm has 18 decimals
+            setGOhmBalance(gOhmBalance);
+            const sOhmFromGOhmRaw = await sOhmContract.fromG(gOhmBalanceRaw);
+            const sOhmFromGOhm = sOhmFromGOhmRaw.toNumber() / 10 ** 9;
+            setTotalSOhmBalance(sOhmFromGOhm + sOhmBalance);
+        } catch (e) {
+            setHasError(true);
+        }
     }
+
+    const onChangeHandler = _debounce((event: React.ChangeEvent<HTMLInputElement>) => {
+        setHasError(false);
+        setAddress(event.target.value);
+    }, 200);
+
+    const onClickHandler = () => {
+        getBalanceInfo(address);
+    };
 
     return (
         <Container //
@@ -92,26 +109,46 @@ const App = (props: MyProps) => {
                             </Header>
                         </Grid>
 
-                        <Grid container xs={12} style={{ marginBottom: '5rem' }}>
+                        <Grid container style={{ marginBottom: '4rem' }}>
                             <Grid item xs={4}>
-                                <Metric title="APY" metric={yearlyAPY.toString()} />
+                                <Metric title="APY" metric={yearlyAPY} adornment={Adornment.Percentage} />
                             </Grid>
                             <Grid item xs={4}>
-                                <Metric title="sOHM Price" metric={'425.74'} />
+                                <Metric title="sOHM Price" metric={425.74} adornment={Adornment.Dollar} />
                             </Grid>
                             <Grid item xs={4}>
-                                <Metric title="gOHM Price" metric={'1000'} />
+                                <Metric title="gOHM Price" metric={1000} adornment={Adornment.Dollar} />
                             </Grid>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={12} style={{ marginBottom: '4rem' }}>
                             <Typography classes={{ root: classes.walletAddressLabel }} variant="h6">
                                 Wallet Address
                             </Typography>
-                            <form className={classes.form} autoComplete="off">
-                                <TextField id="address" variant="outlined" />
-                                <Button>Search</Button>
-                            </form>
+                            <div className={classes.searchBar}>
+                                <TextField //
+                                    id="address"
+                                    variant="outlined"
+                                    placeholder="0x04906695D6D12CF5459975d7C3C03356E4Ccd460"
+                                    onChange={onChangeHandler}
+                                />
+                                <Button onClick={onClickHandler}>Enter Address</Button>
+                            </div>
+                            {hasError && (
+                                <div style={{ position: 'relative' }}>
+                                    <Typography variant="body1" classes={{ root: classes.errorMessage }}>
+                                        Failed to retrieve wallet address. Please try again.
+                                    </Typography>
+                                </div>
+                            )}
                         </Grid>
+                        <div className={classes.dataRows}>
+                            <DataRow text="sOhm Balance" value={sOhmBalance} adornment={Adornment.SOhm} />
+                            <DataRow text="gOhm Balance" value={gOhmBalance} adornment={Adornment.GOhm} />
+                            <DataRow text="Total sOhm Balance" value={totalSOhmBalance} adornment={Adornment.SOhm} />
+                            <Divider />
+                            <DataRow text="Next Reward Yield" value={rebaseYield} adornment={Adornment.SOhm} />
+                            <DataRow text="ROI (5-Day Rate)" value={fiveDayAPR} adornment={Adornment.Percentage} />
+                        </div>
                     </Grid>
                 </Paper>
             </div>
