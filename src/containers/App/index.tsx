@@ -82,15 +82,16 @@ const App = (props: MyProps) => {
         ) as GOHM;
         try {
             const sOhmBalanceRaw: BigNumber = await sOhmContract.balanceOf(address);
-            const sOhmBalance = sOhmBalanceRaw.toNumber() / 10 ** 9; // sOhm has 9 decimals
+            const sOhmBalance = Number(ethers.utils.formatUnits(sOhmBalanceRaw, 9))
             setSOhmBalance(sOhmBalance);
             const gOhmBalanceRaw: BigNumber = await gOhmContract.balanceOf(address);
-            const gOhmBalance = gOhmBalanceRaw.toNumber() / 10 ** 18; // gOhm has 18 decimals
+            const gOhmBalance = Number(ethers.utils.formatEther(gOhmBalanceRaw));
             setGOhmBalance(gOhmBalance);
             const sOhmFromGOhmRaw = await sOhmContract.fromG(gOhmBalanceRaw);
-            const sOhmFromGOhm = sOhmFromGOhmRaw.toNumber() / 10 ** 9;
+            const sOhmFromGOhm = Number(ethers.utils.formatUnits(sOhmFromGOhmRaw, 9))
             setTotalSOhmBalance(sOhmFromGOhm + sOhmBalance);
         } catch (e) {
+            console.log(e)
             setHasError(true);
         }
     }
@@ -160,7 +161,8 @@ const App = (props: MyProps) => {
                             <DataRow text="gOhm Balance" value={gOhmBalance} adornment={Adornment.GOhm} />
                             <DataRow text="Total sOhm Balance" value={totalSOhmBalance} adornment={Adornment.SOhm} />
                             <Divider />
-                            <DataRow text="Next Reward Yield" value={rebaseYield} adornment={Adornment.SOhm} />
+                            <DataRow text="Next Reward Amount" value={rebaseYield * totalSOhmBalance} adornment={Adornment.SOhm} />
+                            <DataRow text="Next Reward Yield" value={rebaseYield} adornment={Adornment.Percentage} />
                             <DataRow text="ROI (5-Day Rate)" value={fiveDayAPR} adornment={Adornment.Percentage} />
                         </div>
                     </Grid>
