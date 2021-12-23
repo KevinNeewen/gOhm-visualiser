@@ -20,15 +20,13 @@ const styles = makeStyles((theme: Theme) =>
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            height: '70%',
-            width: '70%',
             maxWidth: '69rem',
             padding: '1.6rem 2.5rem 2.5rem 2.5rem',
         },
         header: {
             color: theme.palette.primary.light,
         },
-        form: {
+        searchBar: {
             display: 'flex',
             flexWrap: 'wrap',
             '& .MuiFormControl-root': {
@@ -42,6 +40,15 @@ const styles = makeStyles((theme: Theme) =>
         walletAddressLabel: {
             color: theme.palette.primary.light,
             marginBottom: '.5rem',
+        },
+        dataRows: {
+            width: '100%',
+        },
+        errorMessage: {
+            color: theme.palette.colors.yellow,
+            position: 'absolute',
+            fontSize: '1rem',
+            marginTop: '.5rem',
         },
     }),
 );
