@@ -53,17 +53,41 @@ export const theme = createTheme({
         },
     },
     overrides: {
-        // MuiButton: {
-        //     root: {
-        //         backgroundColor: colors.YELLOW,
-        //         fontSize: '1.2857rem',
-        //         fontWeight: 500,
-        //         borderRadius: '.5rem',
-        //         textTransform: 'capitalize',
-        //     },
-        //     text: {
-        //         padding: '.5rem 5rem',
-        //     },
-        // },
+        MuiButton: {
+            root: {
+                backgroundColor: colors.YELLOW,
+                fontSize: '1.2857rem',
+                fontWeight: 500,
+                borderRadius: '.5rem',
+                textTransform: 'capitalize',
+            },
+            text: {
+                padding: '.5rem 5rem',
+            },
+        },
+        MuiOutlinedInput: {
+            notchedOutline: {
+                borderRadius: '.3rem',
+
+                color: colors.WHITE,
+            },
+            root: {
+                border: `2px solid ${colors.LIGHT_GRAY}`,
+                '&:hover': {
+                    border: `2px solid ${colors.WHITE}`,
+                },
+                '&$focused': {
+                    border: `2px solid ${colors.WHITE}`,
+                },
+            },
+        },
+        MuiInputBase: {
+            root: {
+                border: 0,
+                color: colors.WHITE,
+                fontSize: '1rem',
+                padding: '0 .4rem',
+            },
+        },
     },
 });
