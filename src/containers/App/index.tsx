@@ -3,9 +3,11 @@ import { BigNumber, ethers } from 'ethers';
 import sOhm from '../../abi/sOlympusERC20.sol/sOlympus.json';
 import gOhm from '../../abi/gOHM.sol/gOHM.json';
 import Staking from '../../abi/Staking.sol/OlympusStaking.json';
+import SLP from '../../abi/UniswapV2Pair.json'
 import { SOlympus } from '../../typechain/SOlympus';
 import { GOHM } from '../../typechain/GOHM';
 import { OlympusStaking } from '../../typechain/OlympusStaking';
+import { UniswapV2Pair } from '../../typechain/UniswapV2Pair';
 import AppBar from '../../components/AppBar';
 import { Container, Grid, Paper, Button, TextField, Typography, Divider } from '@material-ui/core';
 import useStyles from './styles';
@@ -22,6 +24,8 @@ const App = (props: MyProps) => {
     const [rebaseYield, setRebaseYield] = useState(0); //these apy figures are fractions. x 100 for percentage
     const [fiveDayAPR, setFiveDayAPR] = useState(0);
     const [yearlyAPY, setYearlyAPY] = useState(0);
+    const [ohmPrice, setOhmPrice] = useState(0);
+    const [gOhmIndex, setGOhmIndex] = useState(0);
     const [sOhmBalance, setSOhmBalance] = useState(0);
     const [gOhmBalance, setGOhmBalance] = useState(0);
     const [totalSOhmBalance, setTotalSOhmBalance] = useState(0);
@@ -41,14 +45,24 @@ const App = (props: MyProps) => {
                 Staking.abi,
                 provider,
             ) as OlympusStaking;
+            const ohmDaiSlpContract: UniswapV2Pair = new ethers.Contract(
+                '0x055475920a8c93CfFb64d039A8205F7AcC7722d3',
+                SLP.abi,
+                provider,
+            ) as UniswapV2Pair;
 
             const supply = (await sOhmContract.circulatingSupply()).toNumber();
             const distribute = (await stakingContract.epoch()).distribute.toNumber();
             const nextRebaseYield = distribute / supply;
+            const reserves = await ohmDaiSlpContract.getReserves();
+            const ohmPriceRaw = reserves[1].div(reserves[0]).toNumber()
+            const gOhmIndexRaw = (await sOhmContract.index()).toNumber()
 
             setRebaseYield(nextRebaseYield);
             setFiveDayAPR(Math.pow(1 + nextRebaseYield, 5 * 3) - 1);
             setYearlyAPY(Math.pow(1 + nextRebaseYield, 365 * 3) - 1);
+            setOhmPrice(ohmPriceRaw / (10**9));
+            setGOhmIndex(gOhmIndexRaw / (10**9))
         }
 
         getOhmRebaseInfo();
@@ -114,10 +128,10 @@ const App = (props: MyProps) => {
                                 <Metric title="APY" metric={yearlyAPY} adornment={Adornment.Percentage} />
                             </Grid>
                             <Grid item xs={4}>
-                                <Metric title="sOHM Price" metric={425.74} adornment={Adornment.Dollar} />
+                                <Metric title="sOHM Price" metric={ohmPrice} adornment={Adornment.Dollar} />
                             </Grid>
                             <Grid item xs={4}>
-                                <Metric title="gOHM Price" metric={1000} adornment={Adornment.Dollar} />
+                                <Metric title="gOHM Price" metric={ohmPrice * gOhmIndex} adornment={Adornment.Dollar} />
                             </Grid>
                         </Grid>
                         <Grid item xs={12} style={{ marginBottom: '4rem' }}>
@@ -128,7 +142,7 @@ const App = (props: MyProps) => {
                                 <TextField //
                                     id="address"
                                     variant="outlined"
-                                    placeholder="0x04906695D6D12CF5459975d7C3C03356E4Ccd460"
+                                    placeholder=""
                                     onChange={onChangeHandler}
                                 />
                                 <Button onClick={onClickHandler}>Enter Address</Button>
