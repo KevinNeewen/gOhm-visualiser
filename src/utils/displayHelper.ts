@@ -1,4 +1,4 @@
-import { Adornment } from '../model';
+import { Adornment } from '../constants';
 
 const convertValueToDisplay = (value: number, adornment: Adornment, decimals = 1): string => {
     switch (adornment) {
